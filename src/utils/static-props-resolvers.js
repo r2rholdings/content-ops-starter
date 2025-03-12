@@ -12,7 +12,18 @@ import {
 export function resolveStaticProps(urlPath, data) {
     // get root path of paged path: /blog/page/2 => /blog
     const rootUrlPath = getRootPagePath(urlPath);
-    const { __metadata, ...rest } = data.pages.find((page) => page.__metadata.urlPath === rootUrlPath);
+    
+    // Find the page with matching URL path
+    const matchingPage = data.pages.find((page) => page.__metadata?.urlPath === rootUrlPath);
+    
+    // If no matching page is found, log an error and return empty props
+    if (!matchingPage) {
+        console.error(`No matching page found for URL path: ${urlPath} (root: ${rootUrlPath})`);
+        console.log('Available pages:', data.pages.map(page => page.__metadata?.urlPath));
+        return { page: { __metadata: { urlPath } }, ...data.props };
+    }
+    
+    const { __metadata, ...rest } = matchingPage;
     const props = {
         page: {
             __metadata: {
@@ -39,6 +50,12 @@ export function resolveStaticProps(urlPath, data) {
 }
 
 const StaticPropsResolvers = {
+    // Add support for generic page layouts
+    PageLayout: (props, data, debugContext) => {
+        // Handle generic pages, including custom pages like glp-injectables
+        return props;
+    },
+    
     PostLayout: (props, data, debugContext) => {
         return resolveReferences(props, ['author', 'category'], data.objects, debugContext);
     },
@@ -88,5 +105,18 @@ const StaticPropsResolvers = {
     },
     FeaturedPeopleSection: (props, data, debugContext) => {
         return resolveReferences(props, ['people'], data.objects, debugContext);
+    },
+    
+    // Add support for custom sections that might be used in the glp-injectables page
+    HeroSection: (props, data, debugContext) => {
+        return props;
+    },
+    
+    ServicesSection: (props, data, debugContext) => {
+        return props;
+    },
+    
+    ContactSection: (props, data, debugContext) => {
+        return props;
     }
 };

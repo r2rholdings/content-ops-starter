@@ -5,32 +5,68 @@ export function resolveStaticPaths({ pages, objects }) {
         if (!process.env.stackbitPreview && page.isDraft) {
             return paths;
         }
-        const objectType = page.__metadata?.modelName;
-        const pageUrlPath = page.__metadata?.urlPath;
-        if (objectType && StaticPathsResolvers[objectType]) {
-            const resolver = StaticPathsResolvers[objectType];
-            return paths.concat(resolver(page, objects));
+        
+        try {
+            const objectType = page.__metadata?.modelName;
+            const pageUrlPath = page.__metadata?.urlPath;
+            
+            // If a resolver exists for this object type, use it
+            if (objectType && StaticPathsResolvers[objectType]) {
+                const resolver = StaticPathsResolvers[objectType];
+                const resolvedPaths = resolver(page, objects);
+                
+                // Make sure resolver returned valid paths
+                if (Array.isArray(resolvedPaths)) {
+                    return paths.concat(resolvedPaths.filter(path => path != null));
+                }
+                
+                // If resolver returned a single path
+                if (resolvedPaths != null) {
+                    return paths.concat(resolvedPaths);
+                }
+                
+                return paths;
+            }
+            
+            // Only add URL path if it exists
+            if (pageUrlPath) {
+                return paths.concat(pageUrlPath);
+            }
+            
+            return paths;
+        } catch (error) {
+            console.error(`Error resolving paths for page: ${page?.__metadata?.id || 'unknown page'}`, error);
+            return paths;
         }
-        return paths.concat(pageUrlPath);
     }, []);
 }
 
 const StaticPathsResolvers = {
     PostFeedLayout: (page, objects) => {
-        let posts = getAllNonFeaturedPostsSorted(objects);
-        if (!process.env.stackbitPreview) {
-            posts = posts.filter(isPublished);
+        try {
+            let posts = getAllNonFeaturedPostsSorted(objects);
+            if (!process.env.stackbitPreview) {
+                posts = posts.filter(isPublished);
+            }
+            const numOfPostsPerPage = page.numOfPostsPerPage ?? 10;
+            return generatePagedPathsForPage(page, posts, numOfPostsPerPage);
+        } catch (error) {
+            console.error(`Error resolving PostFeedLayout paths for page: ${page?.__metadata?.id || 'unknown page'}`, error);
+            return [];
         }
-        const numOfPostsPerPage = page.numOfPostsPerPage ?? 10;
-        return generatePagedPathsForPage(page, posts, numOfPostsPerPage);
     },
     PostFeedCategoryLayout: (page, objects) => {
-        const categoryId = page.__metadata?.id;
-        const numOfPostsPerPage = page.numOfPostsPerPage ?? 10;
-        let categoryPosts = getAllCategoryPostsSorted(objects, categoryId);
-        if (!process.env.stackbitPreview) {
-            categoryPosts = categoryPosts.filter(isPublished);
+        try {
+            const categoryId = page.__metadata?.id;
+            const numOfPostsPerPage = page.numOfPostsPerPage ?? 10;
+            let categoryPosts = getAllCategoryPostsSorted(objects, categoryId);
+            if (!process.env.stackbitPreview) {
+                categoryPosts = categoryPosts.filter(isPublished);
+            }
+            return generatePagedPathsForPage(page, categoryPosts, numOfPostsPerPage);
+        } catch (error) {
+            console.error(`Error resolving PostFeedCategoryLayout paths for page: ${page?.__metadata?.id || 'unknown page'}`, error);
+            return [];
         }
-        return generatePagedPathsForPage(page, categoryPosts, numOfPostsPerPage);
     }
 };

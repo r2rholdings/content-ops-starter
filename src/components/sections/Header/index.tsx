@@ -1,3 +1,61 @@
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export interface HeaderProps {
+    logo?: {
+        src: string;
+        alt: string;
+    };
+    title?: string;
+    navLinks?: Array<{
+        label: string;
+        url: string;
+    }>;
+}
+
+export function Header(props: HeaderProps) {
+    const { logo, title, navLinks = [] } = props;
+
+    return (
+        <header className="py-5 bg-white">
+            <div className="container mx-auto px-5 flex justify-between items-center">
+                <div className="flex items-center">
+                    {logo?.src ? (
+                        <Link href="/" className="block">
+                            <Image
+                                src={logo.src}
+                                alt={logo.alt || 'Logo'}
+                                width={180}
+                                height={60}
+                                className="h-10 w-auto object-contain"
+                            />
+                        </Link>
+                    ) : title ? (
+                        <Link href="/" className="text-xl font-bold">
+                            {title}
+                        </Link>
+                    ) : null}
+                </div>
+
+                {navLinks.length > 0 && (
+                    <nav>
+                        <ul className="flex gap-5">
+                            {navLinks.map((link, index) => (
+                                <li key={index}>
+                                    <Link href={link.url} className="text-gray-700 hover:text-primary-500">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                )}
+            </div>
+        </header>
+    );
+}
+
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';

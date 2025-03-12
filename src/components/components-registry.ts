@@ -9,7 +9,7 @@ import { ComponentType } from 'react';
  * is bundled only when used.
  */
 
-export function getComponent(key: string): ComponentType {
+export function getComponent(key: string): ComponentType<any> {
     return components[key];
 }
 
@@ -30,7 +30,10 @@ export function getComponent(key: string): ComponentType {
  *     const Section = getComponent(section.__metadata.modelName);
  *     return <Section {...section} />;
  */
-const components = {
+/**
+ * Map of all components registered for use in this site.
+ */
+const components: Record<string, ComponentType<any>> = {
     AutoCompletePosts: dynamic(() => import('./blocks/SearchBlock/AutoCompletePosts')),
     CarouselSection: dynamic(() => import('./sections/CarouselSection')),
     CheckboxFormControl: dynamic(() => import('./blocks/FormBlock/CheckboxFormControl')),
@@ -41,8 +44,10 @@ const components = {
     FeaturedItemsSection: dynamic(() => import('./sections/FeaturedItemsSection')),
     FeaturedPeopleSection: dynamic(() => import('./sections/FeaturedPeopleSection')),
     FeaturedPostsSection: dynamic(() => import('./sections/FeaturedPostsSection')),
+    Footer: dynamic(() => import('./sections/Footer')),
     FormBlock: dynamic(() => import('./blocks/FormBlock')),
     GenericSection: dynamic(() => import('./sections/GenericSection')),
+    Header: dynamic(() => import('./sections/Header')),
     ImageBlock: dynamic(() => import('./blocks/ImageBlock')),
     ImageGallerySection: dynamic(() => import('./sections/ImageGallerySection')),
     PostFeedSection: dynamic(() => import('./sections/PostFeedSection')),
@@ -52,8 +57,12 @@ const components = {
     TextareaFormControl: dynamic(() => import('./blocks/FormBlock/TextareaFormControl')),
     TextFormControl: dynamic(() => import('./blocks/FormBlock/TextFormControl')),
     VideoBlock: dynamic(() => import('./blocks/VideoBlock')),
+    // Layout components
     PageLayout: dynamic(() => import('./layouts/PageLayout')),
     PostLayout: dynamic(() => import('./layouts/PostLayout')),
     PostFeedLayout: dynamic(() => import('./layouts/PostFeedLayout')),
-    PostFeedCategoryLayout: dynamic(() => import('./layouts/PostFeedCategoryLayout'))
+    PostFeedCategoryLayout: dynamic(() => import('./layouts/PostFeedCategoryLayout')),
+    // Base Layouts
+    DefaultBaseLayout: dynamic(() => import('./layouts/DefaultBaseLayout')),
+    BlankBaseLayout: dynamic(() => import('./layouts/BlankBaseLayout'))
 };

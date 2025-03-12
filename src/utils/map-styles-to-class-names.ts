@@ -1,3 +1,392 @@
+/**
+ * Utility for mapping style objects to CSS class names
+ * Primarily designed to work with Tailwind CSS classes
+ */
+
+/**
+ * Interface for style objects
+ */
+export interface StyleProps {
+  padding?: Padding;
+  margin?: Margin;
+  width?: Width;
+  height?: Height;
+  color?: Color;
+  backgroundColor?: BackgroundColor;
+  borderColor?: BorderColor;
+  borderWidth?: BorderWidth;
+  borderRadius?: BorderRadius;
+  textAlign?: TextAlign;
+  fontSize?: FontSize;
+  fontWeight?: FontWeight;
+  display?: Display;
+  flexDirection?: FlexDirection;
+  justifyContent?: JustifyContent;
+  alignItems?: AlignItems;
+  gap?: Gap;
+  position?: Position;
+  shadow?: Shadow;
+  opacity?: Opacity;
+  overflow?: Overflow;
+  zIndex?: ZIndex;
+  transition?: Transition;
+  transform?: Transform;
+}
+
+// Sub-interfaces for specific style properties
+export type Padding = {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+  x?: string;
+  y?: string;
+  all?: string;
+};
+
+export type Margin = {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+  x?: string;
+  y?: string;
+  all?: string;
+};
+
+export type Width = string;
+export type Height = string;
+
+export type Color = string;
+export type BackgroundColor = string;
+export type BorderColor = string;
+
+export type BorderWidth = {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+  all?: string;
+};
+
+export type BorderRadius = {
+  topLeft?: string;
+  topRight?: string;
+  bottomRight?: string;
+  bottomLeft?: string;
+  all?: string;
+};
+
+export type TextAlign = 'left' | 'center' | 'right' | 'justify';
+export type FontSize = string;
+export type FontWeight = string;
+
+export type Display = 'block' | 'inline' | 'inline-block' | 'flex' | 'inline-flex' | 'grid' | 'inline-grid' | 'none';
+export type FlexDirection = 'row' | 'row-reverse' | 'column' | 'column-reverse';
+export type JustifyContent = 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
+export type AlignItems = 'start' | 'end' | 'center' | 'baseline' | 'stretch';
+export type Gap = string;
+
+export type Position = 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+export type Shadow = string;
+export type Opacity = string;
+export type Overflow = 'auto' | 'hidden' | 'visible' | 'scroll';
+export type ZIndex = string;
+export type Transition = string;
+export type Transform = string;
+
+/**
+ * Maps padding object to corresponding Tailwind CSS classes
+ */
+function mapPaddingToClassNames(padding: Padding): string[] {
+  const classes: string[] = [];
+
+  if (padding.all) {
+    classes.push(`p-${padding.all}`);
+  } else {
+    if (padding.y) classes.push(`py-${padding.y}`);
+    if (padding.x) classes.push(`px-${padding.x}`);
+    if (padding.top) classes.push(`pt-${padding.top}`);
+    if (padding.right) classes.push(`pr-${padding.right}`);
+    if (padding.bottom) classes.push(`pb-${padding.bottom}`);
+    if (padding.left) classes.push(`pl-${padding.left}`);
+  }
+
+  return classes;
+}
+
+/**
+ * Maps margin object to corresponding Tailwind CSS classes
+ */
+function mapMarginToClassNames(margin: Margin): string[] {
+  const classes: string[] = [];
+
+  if (margin.all) {
+    classes.push(`m-${margin.all}`);
+  } else {
+    if (margin.y) classes.push(`my-${margin.y}`);
+    if (margin.x) classes.push(`mx-${margin.x}`);
+    if (margin.top) classes.push(`mt-${margin.top}`);
+    if (margin.right) classes.push(`mr-${margin.right}`);
+    if (margin.bottom) classes.push(`mb-${margin.bottom}`);
+    if (margin.left) classes.push(`ml-${margin.left}`);
+  }
+
+  return classes;
+}
+
+/**
+ * Maps border width object to corresponding Tailwind CSS classes
+ */
+function mapBorderWidthToClassNames(borderWidth: BorderWidth): string[] {
+  const classes: string[] = [];
+
+  if (borderWidth.all) {
+    classes.push(`border-${borderWidth.all}`);
+  } else {
+    if (borderWidth.top) classes.push(`border-t-${borderWidth.top}`);
+    if (borderWidth.right) classes.push(`border-r-${borderWidth.right}`);
+    if (borderWidth.bottom) classes.push(`border-b-${borderWidth.bottom}`);
+    if (borderWidth.left) classes.push(`border-l-${borderWidth.left}`);
+  }
+
+  return classes;
+}
+
+/**
+ * Maps border radius object to corresponding Tailwind CSS classes
+ */
+function mapBorderRadiusToClassNames(borderRadius: BorderRadius): string[] {
+  const classes: string[] = [];
+
+  if (borderRadius.all) {
+    classes.push(`rounded-${borderRadius.all}`);
+  } else {
+    if (borderRadius.topLeft) classes.push(`rounded-tl-${borderRadius.topLeft}`);
+    if (borderRadius.topRight) classes.push(`rounded-tr-${borderRadius.topRight}`);
+    if (borderRadius.bottomRight) classes.push(`rounded-br-${borderRadius.bottomRight}`);
+    if (borderRadius.bottomLeft) classes.push(`rounded-bl-${borderRadius.bottomLeft}`);
+  }
+
+  return classes;
+}
+
+/**
+ * Maps flex properties to corresponding Tailwind CSS classes
+ */
+function mapFlexPropertiesToClassNames(
+  display: Display = 'block',
+  flexDirection?: FlexDirection,
+  justifyContent?: JustifyContent,
+  alignItems?: AlignItems,
+  gap?: Gap
+): string[] {
+  const classes: string[] = [];
+
+  // Add display class
+  classes.push(display);
+  
+  // Add flex direction if display is flex or inline-flex
+  if ((display === 'flex' || display === 'inline-flex') && flexDirection) {
+    classes.push(`flex-${flexDirection}`);
+  }
+
+  // Add justify content if display is flex or inline-flex
+  if ((display === 'flex' || display === 'inline-flex') && justifyContent) {
+    classes.push(`justify-${justifyContent}`);
+  }
+
+  // Add align items if display is flex or inline-flex
+  if ((display === 'flex' || display === 'inline-flex') && alignItems) {
+    classes.push(`items-${alignItems}`);
+  }
+
+  // Add gap if provided
+  if (gap) {
+    classes.push(`gap-${gap}`);
+  }
+
+  return classes;
+}
+
+/**
+ * Main function to map style object to CSS class names
+ */
+export function mapStylesToClassNames(styles?: StyleProps): string {
+  if (!styles) return '';
+
+  const classNames: string[] = [];
+
+  // Map padding
+  if (styles.padding) {
+    classNames.push(...mapPaddingToClassNames(styles.padding));
+  }
+
+  // Map margin
+  if (styles.margin) {
+    classNames.push(...mapMarginToClassNames(styles.margin));
+  }
+
+  // Map width
+  if (styles.width) {
+    classNames.push(`w-${styles.width}`);
+  }
+
+  // Map height
+  if (styles.height) {
+    classNames.push(`h-${styles.height}`);
+  }
+
+  // Map text color
+  if (styles.color) {
+    classNames.push(`text-${styles.color}`);
+  }
+
+  // Map background color
+  if (styles.backgroundColor) {
+    classNames.push(`bg-${styles.backgroundColor}`);
+  }
+
+  // Map border color
+  if (styles.borderColor) {
+    classNames.push(`border-${styles.borderColor}`);
+  }
+
+  // Map border width
+  if (styles.borderWidth) {
+    classNames.push(...mapBorderWidthToClassNames(styles.borderWidth));
+  }
+
+  // Map border radius
+  if (styles.borderRadius) {
+    classNames.push(...mapBorderRadiusToClassNames(styles.borderRadius));
+  }
+
+  // Map text alignment
+  if (styles.textAlign) {
+    classNames.push(`text-${styles.textAlign}`);
+  }
+
+  // Map font size
+  if (styles.fontSize) {
+    classNames.push(`text-${styles.fontSize}`);
+  }
+
+  // Map font weight
+  if (styles.fontWeight) {
+    classNames.push(`font-${styles.fontWeight}`);
+  }
+
+  // Map flex properties
+  if (styles.display || styles.flexDirection || styles.justifyContent || styles.alignItems || styles.gap) {
+    classNames.push(
+      ...mapFlexPropertiesToClassNames(
+        styles.display,
+        styles.flexDirection,
+        styles.justifyContent,
+        styles.alignItems,
+        styles.gap
+      )
+    );
+  }
+
+  // Map position
+  if (styles.position) {
+    classNames.push(styles.position);
+  }
+
+  // Map shadow
+  if (styles.shadow) {
+    classNames.push(`shadow-${styles.shadow}`);
+  }
+
+  // Map opacity
+  if (styles.opacity) {
+    classNames.push(`opacity-${styles.opacity}`);
+  }
+
+  // Map overflow
+  if (styles.overflow) {
+    classNames.push(`overflow-${styles.overflow}`);
+  }
+
+  // Map z-index
+  if (styles.zIndex) {
+    classNames.push(`z-${styles.zIndex}`);
+  }
+
+  // Map transition
+  if (styles.transition) {
+    classNames.push(`transition-${styles.transition}`);
+  }
+
+  // Map transform
+  if (styles.transform) {
+    classNames.push(`transform-${styles.transform}`);
+  }
+
+  return classNames.join(' ');
+}
+
+/**
+ * Helper function to combine multiple style objects
+ * Later objects will override properties from earlier ones
+ */
+export function combineStyles(...styleObjects: (StyleProps | undefined)[]): StyleProps {
+  return styleObjects.reduce((combined, styleObj) => {
+    if (!styleObj) return combined;
+    return { ...combined, ...styleObj };
+  }, {});
+}
+
+/**
+ * Helper function to create a style object with padding
+ */
+export function createPadding(
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string,
+  x?: string,
+  y?: string,
+  all?: string
+): Padding {
+  return { top, right, bottom, left, x, y, all };
+}
+
+/**
+ * Helper function to create a style object with margin
+ */
+export function createMargin(
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string,
+  x?: string,
+  y?: string,
+  all?: string
+): Margin {
+  return { top, right, bottom, left, x, y, all };
+}
+
+/**
+ * Helper function to create a flex container style object
+ */
+export function createFlexContainer(
+  direction: FlexDirection = 'row',
+  justify?: JustifyContent,
+  align?: AlignItems,
+  gap?: Gap
+): Partial<StyleProps> {
+  return {
+    display: 'flex',
+    flexDirection: direction,
+    justifyContent: justify,
+    alignItems: align,
+    gap,
+  };
+}
+
 const TAILWIND_MAP = {
     alignItems: {
         'flex-start': 'items-start',

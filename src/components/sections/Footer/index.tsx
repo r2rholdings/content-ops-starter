@@ -1,3 +1,63 @@
+import React from 'react';
+import Link from 'next/link';
+
+export interface FooterProps {
+    copyright?: string;
+    socialLinks?: Array<{
+        label: string;
+        url: string;
+    }>;
+    navLinks?: Array<{
+        label: string;
+        url: string;
+    }>;
+}
+
+export function Footer(props: FooterProps) {
+    const { copyright, socialLinks = [], navLinks = [] } = props;
+    const year = new Date().getFullYear();
+
+    return (
+        <footer className="bg-gray-100 py-8">
+            <div className="container mx-auto px-5">
+                {navLinks.length > 0 && (
+                    <div className="mb-6">
+                        <ul className="flex flex-wrap gap-5 justify-center">
+                            {navLinks.map((link, index) => (
+                                <li key={index}>
+                                    <Link href={link.url} className="text-gray-700 hover:text-primary-500">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {socialLinks.length > 0 && (
+                    <div className="mb-6">
+                        <ul className="flex gap-4 justify-center">
+                            {socialLinks.map((link, index) => (
+                                <li key={index}>
+                                    <Link href={link.url} className="text-gray-700 hover:text-primary-500">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {copyright && (
+                    <div className="text-center text-gray-500 text-sm">
+                        {copyright.replace('{year}', year.toString())}
+                    </div>
+                )}
+            </div>
+        </footer>
+    );
+}
+
 import * as React from 'react';
 import Markdown from 'markdown-to-jsx';
 import classNames from 'classnames';
